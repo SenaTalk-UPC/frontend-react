@@ -1,10 +1,11 @@
-import axios from 'axios';
+import axios from '../utils/axiosConfig';
 
-const API_URL = 'http://localhost:5000/recordings';
+const API_URL = '/translation';
 
-export const getRecordings = async (folderId: string) => {
+// Obtener traducciones por folderId
+export const getRecordings = async (folderId: number) => {
   try {
-    const response = await axios.get(`${API_URL}?folderId=${folderId}`);
+    const response = await axios.get(`${API_URL}/folder/${folderId}`);
     return response.data;
   } catch (error) {
     console.error('Error en getRecordings:', error);
@@ -12,25 +13,30 @@ export const getRecordings = async (folderId: string) => {
   }
 };
 
-export const createRecording = async (text: string, folderId: string) => {
+// Crear una nueva traducción (grabación)
+export const createRecording = async (text: string, folderId: number) => {
   try {
-    const newRecording = {
+    const payload = {
       text,
-      folderId,
+      folder_id: folderId,
     };
-    const response = await axios.post(API_URL, newRecording);
-    return response.data;
+    const response = await axios.post(API_URL, payload);
+    return response.data.data;
   } catch (error) {
     console.error('Error en createRecording:', error);
     throw error;
   }
 };
-export const deleteRecording = async (recordingId: string) => {
+
+// Eliminar una traducción (grabación)
+export const deleteRecording = async (recordingId: number) => {
   try {
     const response = await axios.delete(`${API_URL}/${recordingId}`);
-    return response.data;
+    return response.data.data;
   } catch (error) {
     console.error('Error en deleteRecording:', error);
     throw error;
   }
 };
+
+

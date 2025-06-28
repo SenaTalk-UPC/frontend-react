@@ -3,46 +3,42 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "../components/ui/navbar";
 import { getFolders, createFolder } from "../services/folderService";
 
-type Folder = { id: string; name: string };
+type Folder = { id: number; name: string };
 
 export default function Carpetas() {
   const navigate = useNavigate();
 
-  const [userId, setUserId]       = useState<string | null>(null);
-  const [folders, setFolders]     = useState<Folder[]>([]);
-  const [loading, setLoading]     = useState(true);
-  const [isOpen, setIsOpen]       = useState(false);
-  const [newName, setNewName]     = useState("");
+  const [folders, setFolders] = useState<Folder[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
+  const [newName, setNewName] = useState("");
 
   useEffect(() => {
-    const storedId = localStorage.getItem("userId");
-    if (!storedId) {
-      navigate("/");
-      return;
-    }
-
-    setUserId(storedId);
-    (async () => {
+    const fetchData = async () => {
       try {
-        const data = await getFolders(storedId);
+        const data = await getFolders();
         setFolders(data);
       } catch (err) {
         console.error("Error al cargar carpetas:", err);
+        navigate("/"); // redirigir si ocurre error (por ejemplo, sin login)
       } finally {
         setLoading(false);
       }
-    })();
+    };
+
+    fetchData();
   }, [navigate]);
 
   const handleCreate = async () => {
-    if (!userId || !newName.trim()) return;
+    if (!newName.trim()) return;
+
     if (folders.some(f => f.name.toLowerCase() === newName.trim().toLowerCase())) {
       alert("Ya existe una carpeta con ese nombre");
       return;
     }
 
     try {
-      const created = await createFolder(newName.trim(), userId);
+      const created = await createFolder(newName.trim());
       setFolders(prev => [...prev, created]);
       setNewName("");
       setIsOpen(false);
@@ -51,7 +47,7 @@ export default function Carpetas() {
     }
   };
 
-  const goToFolder = (id: string) => navigate(`/carpetas/${id}`);
+  const goToFolder = (id: number) => navigate(`/carpetas/${id}`);
 
   if (loading) return null;
 
@@ -68,7 +64,7 @@ export default function Carpetas() {
           >
             <img
               src="/carpeta.png"
-              alt="Carpeta"              
+              alt="Carpeta"
               className="w-full h-full object-contain"
             />
             <span className="text-sm font-semibold">{folder.name}</span>

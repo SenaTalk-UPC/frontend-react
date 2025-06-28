@@ -14,9 +14,9 @@ export default function Login() {
     setError("");
 
     try {
-      const user = await loginUser(email, password);
+      const user = await loginUser({ email, password });
+
       if (user) {
-        localStorage.setItem("userId", user.id);
         navigate("/dashboard");
       } else {
         setError("Credenciales incorrectas.");

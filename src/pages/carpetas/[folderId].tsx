@@ -2,14 +2,15 @@ import { useEffect, useState, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Navbar from "../../components/ui/navbar";
 import {
-  getRecordingsByFolder,
   getFolders,
-  deleteRecording,
-  updateRecording
 } from "../../services/folderService";
+import {
+  getRecordings,
+  deleteRecording,
+} from "../../services/recordingService"; // <-- ahora apunta al nuevo servicio
 
-type Folder = { id: string; name: string };
-type Recording = { id: string; text: string; folderId: string; createdAt: string };
+type Folder = { id: number; name: string };
+type Recording = { id: number; text: string; folder_id: number; created_at: string };
 
 const fmt = (iso: string) =>
   new Date(iso).toLocaleString("es-PE", {
@@ -21,31 +22,23 @@ export default function FolderPage() {
   const { folderId } = useParams<{ folderId: string }>();
   const navigate = useNavigate();
 
-  const [userId, setUserId] = useState<string | null>(null);
   const [folders, setFolders] = useState<Folder[]>([]);
   const [recordings, setRecordings] = useState<Recording[]>([]);
   const [loading, setLoading] = useState(true);
   const [sortOrder, setSortOrder] = useState<"desc" | "asc">("desc");
-  const [langMap, setLangMap] = useState<Record<string, "es" | "en">>({});
+  const [langMap, setLangMap] = useState<Record<number, "es" | "en">>({});
 
   useEffect(() => {
-    const uid = localStorage.getItem("userId");
-    if (!uid) {
-      navigate("/");
-      return;
-    }
-    setUserId(uid);
-
     (async () => {
       try {
         const [foldersData, recs] = await Promise.all([
-          getFolders(uid),
-          folderId ? getRecordingsByFolder(folderId) : []
+          getFolders(),
+          folderId ? getRecordings(Number(folderId)) : []
         ]);
         setFolders(foldersData);
         setRecordings(recs);
 
-        const initLang: Record<string, "es" | "en"> = {};
+        const initLang: Record<number, "es" | "en"> = {};
         recs.forEach((r: Recording) => initLang[r.id] = "es");
         setLangMap(initLang);
       } catch (err) {
@@ -54,13 +47,13 @@ export default function FolderPage() {
         setLoading(false);
       }
     })();
-  }, [folderId, navigate]);
+  }, [folderId]);
 
   const orderedRecs = useMemo(() => {
     return [...recordings].sort((a, b) =>
       sortOrder === "asc"
-        ? new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-        : new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        ? new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+        : new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
     );
   }, [recordings, sortOrder]);
 
@@ -71,21 +64,21 @@ export default function FolderPage() {
     speechSynthesis.speak(uttr);
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (id: number) => {
     await deleteRecording(id);
     setRecordings((prev) => prev.filter((r) => r.id !== id));
   };
 
-  const handleMove = async (id: string, newFolderId: string) => {
+  const handleMove = async (id: number, newFolderId: number) => {
     const rec = recordings.find((r) => r.id === id);
-    if (!rec || rec.folderId === newFolderId) return;
-    await updateRecording(id, { folderId: newFolderId });
+    if (!rec || rec.folder_id === newFolderId) return;
+    // await updateRecording(id, { folder_id: newFolderId });
     setRecordings((prev) =>
-      prev.map((r) => (r.id === id ? { ...r, folderId: newFolderId } : r))
+      prev.map((r) => (r.id === id ? { ...r, folder_id: newFolderId } : r))
     );
   };
 
-  const handleLangChange = (id: string, newLang: "es" | "en") =>
+  const handleLangChange = (id: number, newLang: "es" | "en") =>
     setLangMap((prev) => ({ ...prev, [id]: newLang }));
 
   if (loading) {
@@ -96,7 +89,7 @@ export default function FolderPage() {
     );
   }
 
-  const currentFolderName = folders.find((f) => f.id === folderId)?.name ?? folderId;
+  const currentFolderName = folders.find((f) => String(f.id) === folderId)?.name ?? folderId;
 
   return (
     <main className="min-h-screen bg-white p-6 text-gray-800">
@@ -137,13 +130,13 @@ export default function FolderPage() {
             >
               <div className="flex-1">
                 <p className="mb-1">{rec.text}</p>
-                <span className="text-xs text-gray-500">{fmt(rec.createdAt)}</span>
+                <span className="text-xs text-gray-500">{fmt(rec.created_at)}</span>
               </div>
 
               <div className="flex flex-wrap gap-3">
                 <select
-                  value={rec.folderId}
-                  onChange={(e) => handleMove(rec.id, e.target.value)}
+                  value={rec.folder_id}
+                  onChange={(e) => handleMove(rec.id, parseInt(e.target.value))}
                   className="px-3 py-2 border rounded bg-white"
                 >
                   {folders.map((f) => (
