@@ -1,9 +1,7 @@
-import { useNavigate } from "react-router-dom";
 import Navbar from "../components/ui/navbar";
 
 export default function Ayuda() {
-  const navigate = useNavigate();
-
+  
   const cardBase =
     "rounded-2xl px-6 py-8 shadow transition duration-300 hover:-translate-y-1 hover:shadow-lg flex flex-col items-center text-center";
 
