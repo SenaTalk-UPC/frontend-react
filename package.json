@@ -8,7 +8,8 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "json-server": "json-server --watch src/data/db.json --port 5000"
+    "json-server": "json-server --watch src/data/db.json --port 5000",
+    "start": "npx serve -s dist -l 3000"
   },
   "dependencies": {
     "@mediapipe/camera_utils": "^0.3.1675466862",
