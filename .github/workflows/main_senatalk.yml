@@ -62,5 +62,5 @@ jobs:
         with:
           app-name: 'senatalk'
           slot-name: 'Production'
-          package: .
+          package: dist
           
