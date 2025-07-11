@@ -1,4 +1,4 @@
-import { HashRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Login from "../pages/index";
 import Register from "../pages/register";
 import Dashboard from "../pages/dashboard";
@@ -9,7 +9,7 @@ import FolderDetail from "../pages/carpetas/[folderId]";
 
 export default function AppRouter() {
   return (
-    <HashRouter>
+    <BrowserRouter>
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/register" element={<Register />} />
@@ -20,6 +20,6 @@ export default function AppRouter() {
         <Route path="/perfil" element={<Perfil />} />
         <Route path="*" element={<div>404 - Página no encontrada</div>} />
       </Routes>
-    </HashRouter>
+    </BrowserRouter>
   );
 }
