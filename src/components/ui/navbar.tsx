@@ -37,9 +37,9 @@ export default function Navbar({ current }: NavbarProps) {
         <Link to="/info" className={isActive("/info")}>
           Ayuda & FAQ
         </Link>
-        <Link to="/perfil" className={isActive("/perfil")}>
+        {/* <Link to="/perfil" className={isActive("/perfil")}>
           Perfil
-        </Link>
+        </Link> */}
         <button
           onClick={handleLogout}
           className="hover:underline text-sm sm:text-base"
