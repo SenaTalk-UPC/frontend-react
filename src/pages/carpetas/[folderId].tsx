@@ -130,7 +130,7 @@ export default function FolderPage() {
             >
               <div className="flex-1">
                 <p className="mb-1">{rec.text}</p>
-                <span className="text-xs text-gray-500">{fmt(rec.created_at)}</span>
+                {/* <span className="text-xs text-gray-500">{fmt(rec.created_at)}</span> */}
               </div>
 
               <div className="flex flex-wrap gap-3">
