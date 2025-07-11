@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:5000/users";
+const API_URL = "http://40.76.114.46:8000/users";
 
 /** Obtiene un usuario por id (json-server) */
 export async function getUser(id: string) {
