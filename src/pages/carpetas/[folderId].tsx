@@ -12,12 +12,12 @@ import {
 type Folder = { id: number; name: string };
 type Recording = { id: number; text: string; folder_id: number; created_at: string };
 
-const fmt = (iso: string) =>
+/*const fmt = (iso: string) =>
   new Date(iso).toLocaleString("es-PE", {
     year: "numeric", month: "2-digit", day: "2-digit",
     hour: "2-digit", minute: "2-digit"
   });
-
+*/
 export default function FolderPage() {
   const { folderId } = useParams<{ folderId: string }>();
   const navigate = useNavigate();
