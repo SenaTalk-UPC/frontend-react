@@ -15,12 +15,16 @@ import { createRecording } from "../services/recordingService";
 
 export default function Dashboard() {
   const navigate = useNavigate();
-
   const [translation, setTranslation] = useState("");
   const [confidence, setConfidence] = useState("");
   const [cameraOn, setCameraOn] = useState(false);
   const [showOverlay, setOverlay] = useState(true);
   const [lang, setLang] = useState<"es" | "en">("es");
+  const [modal, setModal] = useState<{
+    isOpen: boolean;
+    title: string;
+    message: string;
+  }>({ isOpen: false, title: "", message: "" });
   const isPredictingRef = useRef(false);
 
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -42,29 +46,44 @@ export default function Dashboard() {
     ) => {
       if (!list) return new Array(length).fill(0);
       return list.flatMap((p) =>
-        includeVisibility 
-          ? [p.x, p.y, p.z ?? 0, p.visibility ?? 0] 
+        includeVisibility
+          ? [p.x, p.y, p.z ?? 0, p.visibility ?? 0]
           : [p.x, p.y, p.z ?? 0]
       );
     };
 
-    const pose = extractOrZeros(results.poseLandmarks, 132, true);    // 33 x 4
-    const face = extractOrZeros(results.faceLandmarks, 1404, false);         // 468 x 3
-    const right = extractOrZeros(results.rightHandLandmarks, 63, false);     // 21 x 3
-    const left = extractOrZeros(results.leftHandLandmarks, 63, false);       // 21 x 3
+    const pose = extractOrZeros(results.poseLandmarks, 132, true); // 33 x 4
+    const face = extractOrZeros(results.faceLandmarks, 1404, false); // 468 x 3
+    const right = extractOrZeros(results.rightHandLandmarks, 63, false); // 21 x 3
+    const left = extractOrZeros(results.leftHandLandmarks, 63, false); // 21 x 3
 
-    return [...pose, ...face, ...right, ...left]; 
+    return [...pose, ...face, ...right, ...left];
   };
 
   const saveToFavorites = async () => {
     try {
-      if (!translation.trim()) return alert("No hay traducción para guardar");
+      if (!translation.trim()) {
+        setModal({
+          isOpen: true,
+          title: "Sin traducción",
+          message: "No hay traducción para guardar.",
+        });
+        return;
+      }
 
       const favoriteFolder = await getFavoriteFolderByUser();
       await createRecording(translation, favoriteFolder.id);
-      alert("Traducción guardada en favoritos");
+      setModal({
+        isOpen: true,
+        title: "Éxito",
+        message: "Traducción guardada en favoritos.",
+      });
     } catch (error) {
-      alert("Ocurrió un error al guardar la traducción.");
+      setModal({
+        isOpen: true,
+        title: "Error",
+        message: "Ocurrió un error al guardar la traducción.",
+      });
     }
   };
 
@@ -180,6 +199,10 @@ export default function Dashboard() {
     }
   };
 
+  const closeModal = () => {
+    setModal({ isOpen: false, title: "", message: "" });
+  };
+
   return (
     <main className="min-h-screen bg-white text-gray-800 p-6">
       <Navbar current="Captura y traducción" />
@@ -265,6 +288,24 @@ export default function Dashboard() {
           </div>
         </div>
       </section>
+
+      {/* Modal */}
+      {modal.isOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-sm w-full">
+            <h3 className="text-lg font-bold text-gray-900 mb-4">
+              {modal.title}
+            </h3>
+            <p className="text-gray-700 mb-6">{modal.message}</p>
+            <button
+              onClick={closeModal}
+              className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
+            >
+              Aceptar
+            </button>
+          </div>
+        </div>
+      )}
     </main>
   );
 }
