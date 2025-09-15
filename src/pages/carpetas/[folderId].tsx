@@ -1,23 +1,12 @@
 import { useEffect, useState, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Navbar from "../../components/ui/navbar";
-import {
-  getFolders,
-} from "../../services/folderService";
-import {
-  getRecordings,
-  deleteRecording,
-} from "../../services/recordingService"; // <-- ahora apunta al nuevo servicio
+import { getFolders } from "../../services/folderService";
+import { getRecordings, deleteRecording, updateTranslation } from "../../services/recordingService";
 
 type Folder = { id: number; name: string };
 type Recording = { id: number; text: string; folder_id: number; created_at: string };
 
-/*const fmt = (iso: string) =>
-  new Date(iso).toLocaleString("es-PE", {
-    year: "numeric", month: "2-digit", day: "2-digit",
-    hour: "2-digit", minute: "2-digit"
-  });
-*/
 export default function FolderPage() {
   const { folderId } = useParams<{ folderId: string }>();
   const navigate = useNavigate();
@@ -27,6 +16,12 @@ export default function FolderPage() {
   const [loading, setLoading] = useState(true);
   const [sortOrder, setSortOrder] = useState<"desc" | "asc">("desc");
   const [langMap, setLangMap] = useState<Record<number, "es" | "en">>({});
+  const [moveModal, setMoveModal] = useState<{
+    isOpen: boolean;
+    recordingId: number | null;
+    currentText: string;
+  }>({ isOpen: false, recordingId: null, currentText: "" });
+  const [selectedFolderId, setSelectedFolderId] = useState<number | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -71,11 +66,22 @@ export default function FolderPage() {
 
   const handleMove = async (id: number, newFolderId: number) => {
     const rec = recordings.find((r) => r.id === id);
-    if (!rec || rec.folder_id === newFolderId) return;
-    // await updateRecording(id, { folder_id: newFolderId });
-    setRecordings((prev) =>
-      prev.map((r) => (r.id === id ? { ...r, folder_id: newFolderId } : r))
-    );
+    if (!rec || rec.folder_id === newFolderId) {
+      setMoveModal({ isOpen: false, recordingId: null, currentText: "" });
+      setSelectedFolderId(null);
+      return;
+    }
+
+    try {
+      await updateTranslation(id, { text: rec.text, folder_id: newFolderId });
+      const updatedRecs = await getRecordings(Number(folderId));
+      setRecordings(updatedRecs);
+      setMoveModal({ isOpen: false, recordingId: null, currentText: "" });
+      setSelectedFolderId(null);
+    } catch (err) {
+      console.error("Error moving translation:", err);
+      // Optionally show an error modal here
+    }
   };
 
   const handleLangChange = (id: number, newLang: "es" | "en") =>
@@ -134,17 +140,12 @@ export default function FolderPage() {
               </div>
 
               <div className="flex flex-wrap gap-3">
-                <select
-                  value={rec.folder_id}
-                  onChange={(e) => handleMove(rec.id, parseInt(e.target.value))}
-                  className="px-3 py-2 border rounded bg-white"
+                <button
+                  onClick={() => setMoveModal({ isOpen: true, recordingId: rec.id, currentText: rec.text })}
+                  className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
                 >
-                  {folders.map((f) => (
-                    <option key={f.id} value={f.id}>
-                      {f.name}
-                    </option>
-                  ))}
-                </select>
+                  Mover
+                </button>
 
                 <select
                   value={langMap[rec.id] ?? "es"}
@@ -173,6 +174,52 @@ export default function FolderPage() {
           ))
         )}
       </div>
+
+      {/* Modal para mover grabación */}
+      {moveModal.isOpen && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-xs shadow-lg">
+            <h3 className="text-lg font-semibold mb-4">Mover grabación</h3>
+            <p className="text-gray-700 mb-4">¿A qué carpeta quiere mover el texto?</p>
+            <select
+              value={selectedFolderId || ""}
+              onChange={(e) => setSelectedFolderId(parseInt(e.target.value) || null)}
+              className="w-full border rounded p-2 mb-4 text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="" disabled>Seleccione una carpeta</option>
+              {folders
+                .filter((f) => f.id !== Number(folderId))
+                .map((f) => (
+                  <option key={f.id} value={f.id}>
+                    {f.name}
+                  </option>
+                ))}
+            </select>
+            <div className="flex justify-end gap-2">
+              <button
+                onClick={() => {
+                  setMoveModal({ isOpen: false, recordingId: null, currentText: "" });
+                  setSelectedFolderId(null);
+                }}
+                className="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400 transition"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={() => {
+                  if (moveModal.recordingId && selectedFolderId) {
+                    handleMove(moveModal.recordingId, selectedFolderId);
+                  }
+                }}
+                className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700 transition"
+                disabled={!selectedFolderId}
+              >
+                Aceptar
+            </button>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }

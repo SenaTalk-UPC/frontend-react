@@ -28,6 +28,17 @@ export const createRecording = async (text: string, folderId: number) => {
   }
 };
 
+// Actualizar una traducción
+export const updateTranslation = async (translationId: number, updates: { text: string; folder_id: number }) => {
+  try {
+    const response = await axios.put(`${API_URL}/${translationId}`, updates);
+    return response.data.data;
+  } catch (error) {
+    console.error('Error en updateTranslation:', error);
+    throw error;
+  }
+};
+
 // Eliminar una traducción (grabación)
 export const deleteRecording = async (recordingId: number) => {
   try {
