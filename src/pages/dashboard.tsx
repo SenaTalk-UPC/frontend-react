@@ -27,6 +27,7 @@ export default function Dashboard() {
     message: string;
   }>({ isOpen: false, title: "", message: "" });
   const isPredictingRef = useRef(false);
+  const canPredictRef = useRef(true);
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -157,13 +158,14 @@ export default function Dashboard() {
         sequenceRef.current.shift();
       }
 
-      if (sequenceRef.current.length === 30 && !isPredictingRef.current) {
+      if (sequenceRef.current.length === 30 && !isPredictingRef.current && canPredictRef.current) {
         isPredictingRef.current = true;
+        canPredictRef.current = false;
         const sequenceCopy = [...sequenceRef.current];
 
         sendKeypoints(sequenceCopy)
           .then((response) => {
-            setTranslation(response.result.text);
+            setTranslation((prev) => (prev ? prev + " " + response.result.text : response.result.text));
             setConfidence(response.result.confidence);
           })
           .catch((error) => {
@@ -171,6 +173,10 @@ export default function Dashboard() {
           })
           .finally(() => {
             isPredictingRef.current = false;
+            sequenceRef.current = [];
+            setTimeout(() => {
+              canPredictRef.current = true;
+            }, 1000); // 1 segundo de delay entre predicciones
           });
       }
     });

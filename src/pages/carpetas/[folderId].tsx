@@ -4,6 +4,7 @@ import Navbar from "../../components/ui/navbar";
 import { getFolders } from "../../services/folderService";
 import { getRecordings, deleteRecording, updateTranslation } from "../../services/recordingService";
 import { synthesizeSpeech } from "../../services/speechService";
+import { translateText } from "../../services/textTranslationService";
 
 type Folder = { id: number; name: string };
 type Recording = { id: number; text: string; folder_id: number; created_at: string };
@@ -22,7 +23,13 @@ export default function FolderPage() {
     recordingId: number | null;
     currentText: string;
   }>({ isOpen: false, recordingId: null, currentText: "" });
+  const [translateModal, setTranslateModal] = useState<{
+    isOpen: boolean;
+    recordingId: number | null;
+    currentLang: "es" | "en";
+  }>({ isOpen: false, recordingId: null, currentLang: "es" });
   const [selectedFolderId, setSelectedFolderId] = useState<number | null>(null);
+  const [selectedTargetLang, setSelectedTargetLang] = useState<"es" | "en">("es");
 
   useEffect(() => {
     (async () => {
@@ -56,7 +63,7 @@ export default function FolderPage() {
   const handlePlay = async (txt: string, lang: "es" | "en") => {
     try {
       const languageCode = lang === "es" ? "es-ES" : "en-US";
-      const voiceName = lang === "es" ? "es-ES-Chirp3-HD-Fenrir" : "en-US-Standard-J"; // Ajusta el voice_name para inglés si es necesario
+      const voiceName = lang === "es" ? "es-ES-Chirp3-HD-Fenrir" : "en-US-Chirp3-HD-Achird";
       const audioBlob = await synthesizeSpeech(txt, languageCode, voiceName);
       const audioUrl = URL.createObjectURL(audioBlob);
       const audio = new Audio(audioUrl);
@@ -91,8 +98,27 @@ export default function FolderPage() {
     }
   };
 
-  const handleLangChange = (id: number, newLang: "es" | "en") =>
-    setLangMap((prev) => ({ ...prev, [id]: newLang }));
+  const handleTranslate = async (id: number, targetLang: "es" | "en") => {
+    const rec = recordings.find((r) => r.id === id);
+    if (!rec) return;
+
+    try {
+      const translatedText = await translateText(rec.text, targetLang);
+      // Actualizar el texto en el backend
+      await updateTranslation(id, { text: translatedText, folder_id: rec.folder_id });
+      // Actualizar el estado local
+      setRecordings((prev) =>
+        prev.map((r) => (r.id === id ? { ...r, text: translatedText } : r))
+      );
+      // Actualizar el idioma en langMap
+      setLangMap((prev) => ({ ...prev, [id]: targetLang }));
+      setTranslateModal({ isOpen: false, recordingId: null, currentLang: "es" });
+      setSelectedTargetLang("es");
+    } catch (err) {
+      console.error("Error translating text:", err);
+      // Optionally show an error modal
+    }
+  };
 
   if (loading) {
     return (
@@ -154,14 +180,12 @@ export default function FolderPage() {
                   Mover
                 </button>
 
-                <select
-                  value={langMap[rec.id] ?? "es"}
-                  onChange={(e) => handleLangChange(rec.id, e.target.value as "es" | "en")}
-                  className="px-3 py-2 border rounded bg-white"
+                <button
+                  onClick={() => setTranslateModal({ isOpen: true, recordingId: rec.id, currentLang: langMap[rec.id] ?? "es" })}
+                  className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700"
                 >
-                  <option value="es">Español</option>
-                  <option value="en">English</option>
-                </select>
+                  Traducir a idioma...
+                </button>
 
                 <button
                   onClick={() => handlePlay(rec.text, langMap[rec.id] ?? "es")}
@@ -223,6 +247,45 @@ export default function FolderPage() {
               >
                 Aceptar
             </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal para traducir texto */}
+      {translateModal.isOpen && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-xs shadow-lg">
+            <h3 className="text-lg font-semibold mb-4">Traducir texto</h3>
+            <p className="text-gray-700 mb-4">Seleccione el idioma de destino:</p>
+            <select
+              value={selectedTargetLang}
+              onChange={(e) => setSelectedTargetLang(e.target.value as "es" | "en")}
+              className="w-full border rounded p-2 mb-4 text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="es">Español</option>
+              <option value="en">English</option>
+            </select>
+            <div className="flex justify-end gap-2">
+              <button
+                onClick={() => {
+                  setTranslateModal({ isOpen: false, recordingId: null, currentLang: "es" });
+                  setSelectedTargetLang("es");
+                }}
+                className="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400 transition"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={() => {
+                  if (translateModal.recordingId) {
+                    handleTranslate(translateModal.recordingId, selectedTargetLang);
+                  }
+                }}
+                className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700 transition"
+              >
+                Aceptar
+              </button>
             </div>
           </div>
         </div>
