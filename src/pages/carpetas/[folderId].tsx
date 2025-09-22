@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import Navbar from "../../components/ui/navbar";
 import { getFolders } from "../../services/folderService";
 import { getRecordings, deleteRecording, updateTranslation } from "../../services/recordingService";
+import { synthesizeSpeech } from "../../services/speechService";
 
 type Folder = { id: number; name: string };
 type Recording = { id: number; text: string; folder_id: number; created_at: string };
@@ -52,11 +53,17 @@ export default function FolderPage() {
     );
   }, [recordings, sortOrder]);
 
-  const handlePlay = (txt: string, lang: "es" | "en") => {
-    if (!("speechSynthesis" in window)) return;
-    const uttr = new SpeechSynthesisUtterance(txt);
-    uttr.lang = lang === "es" ? "es-ES" : "en-US";
-    speechSynthesis.speak(uttr);
+  const handlePlay = async (txt: string, lang: "es" | "en") => {
+    try {
+      const languageCode = lang === "es" ? "es-ES" : "en-US";
+      const voiceName = lang === "es" ? "es-ES-Chirp3-HD-Fenrir" : "en-US-Standard-J"; // Ajusta el voice_name para inglés si es necesario
+      const audioBlob = await synthesizeSpeech(txt, languageCode, voiceName);
+      const audioUrl = URL.createObjectURL(audioBlob);
+      const audio = new Audio(audioUrl);
+      audio.play();
+    } catch (err) {
+      console.error("Error al sintetizar y reproducir audio:", err);
+    }
   };
 
   const handleDelete = async (id: number) => {

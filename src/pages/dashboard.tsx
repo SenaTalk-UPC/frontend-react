@@ -12,6 +12,7 @@ import { useNavigate } from "react-router-dom";
 import { sendKeypoints } from "../services/recognitionService";
 import { getFavoriteFolderByUser } from "../services/folderService";
 import { createRecording } from "../services/recordingService";
+import { synthesizeSpeech } from "../services/speechService";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -193,9 +194,21 @@ export default function Dashboard() {
   const toggleOverlay = () =>
     setOverlay((prev) => (overlayRef.current = !prev));
 
-  const speak = () => {
-    if ("speechSynthesis" in window) {
-      speechSynthesis.speak(new SpeechSynthesisUtterance(translation));
+  const speak = async () => {
+    try {
+      const languageCode = lang === "es" ? "es-ES" : "en-US";
+      const voiceName = lang === "es" ? "es-ES-Chirp3-HD-Fenrir" : "en-US-Standard-J"; // Ajusta el voice_name para inglés si es necesario
+      const audioBlob = await synthesizeSpeech(translation, languageCode, voiceName);
+      const audioUrl = URL.createObjectURL(audioBlob);
+      const audio = new Audio(audioUrl);
+      audio.play();
+    } catch (err) {
+      console.error("Error al sintetizar y reproducir audio:", err);
+      setModal({
+        isOpen: true,
+        title: "Error",
+        message: "No se pudo reproducir el audio.",
+      });
     }
   };
 
