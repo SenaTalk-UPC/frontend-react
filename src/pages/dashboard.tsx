@@ -7,7 +7,7 @@ import {
   FACEMESH_TESSELATION,
 } from "@mediapipe/holistic";
 import { Camera } from "@mediapipe/camera_utils";
-import { drawConnectors } from "@mediapipe/drawing_utils";
+import { drawConnectors, drawLandmarks } from "@mediapipe/drawing_utils";
 import { useNavigate } from "react-router-dom";
 import { sendKeypoints } from "../services/recognitionService";
 import { getFavoriteFolderByUser } from "../services/folderService";
@@ -128,26 +128,54 @@ export default function Dashboard() {
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
       if (overlayRef.current) {
-        if (results.poseLandmarks)
+        if (results.poseLandmarks) {
           drawConnectors(ctx, results.poseLandmarks, POSE_CONNECTIONS, {
             color: "#00FF00",
             lineWidth: 4,
           });
-        if (results.leftHandLandmarks)
+          drawLandmarks(ctx, results.poseLandmarks, {
+            color: "#00FF00",
+            fillColor: "#FF0000",
+            lineWidth: 2,
+            radius: 4,
+          });
+        }
+        if (results.leftHandLandmarks) {
           drawConnectors(ctx, results.leftHandLandmarks, HAND_CONNECTIONS, {
             color: "#CC0000",
             lineWidth: 4,
           });
-        if (results.rightHandLandmarks)
+          drawLandmarks(ctx, results.leftHandLandmarks, {
+            color: "#CC0000",
+            fillColor: "#0000FF",
+            lineWidth: 2,
+            radius: 4,
+          });
+        }
+        if (results.rightHandLandmarks) {
           drawConnectors(ctx, results.rightHandLandmarks, HAND_CONNECTIONS, {
             color: "#0000FF",
             lineWidth: 4,
           });
-        if (results.faceLandmarks)
+          drawLandmarks(ctx, results.rightHandLandmarks, {
+            color: "#0000FF",
+            fillColor: "#FF0000",
+            lineWidth: 2,
+            radius: 4,
+          });
+        }
+        if (results.faceLandmarks) {
           drawConnectors(ctx, results.faceLandmarks, FACEMESH_TESSELATION, {
             color: "#C0C0C070",
             lineWidth: 1,
           });
+          drawLandmarks(ctx, results.faceLandmarks, {
+            color: "#C0C0C070",
+            fillColor: "#FFFFFF",
+            lineWidth: 1,
+            radius: 1,
+          });
+        }
       }
 
       ctx.restore();
