@@ -13,6 +13,7 @@ import { sendKeypoints } from "../services/recognitionService";
 import { getFavoriteFolderByUser } from "../services/folderService";
 import { createRecording } from "../services/recordingService";
 import { synthesizeSpeech } from "../services/speechService";
+import { generateSentence } from "../services/improveSentenceService";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -246,6 +247,34 @@ export default function Dashboard() {
     }
   };
 
+  const improveSentence = async () => {
+    try {
+      if (!translation.trim()) {
+        setModal({
+          isOpen: true,
+          title: "Sin traducción",
+          message: "No hay traducción para mejorar.",
+        });
+        return;
+      }
+
+      const improvedText = await generateSentence(translation);
+      setTranslation(improvedText);
+      setModal({
+        isOpen: true,
+        title: "Éxito",
+        message: "Oración mejorada correctamente.",
+      });
+    } catch (err) {
+      console.error("Error al mejorar la oración:", err);
+      setModal({
+        isOpen: true,
+        title: "Error",
+        message: "No se pudo mejorar la oración.",
+      });
+    }
+  };
+
   const closeModal = () => {
     setModal({ isOpen: false, title: "", message: "" });
   };
@@ -299,7 +328,7 @@ export default function Dashboard() {
         <div className="flex-1 bg-blue-50 p-4 rounded-lg shadow flex flex-col">
           <div className="flex items-center justify-between mb-2">
             <label className="font-medium">Texto traducido</label>
-            <select
+            {/*<select
               value={lang}
               onChange={(e) => setLang(e.target.value as "es" | "en")}
               className="px-3 py-1 rounded border bg-white text-sm text-gray-900"
@@ -307,6 +336,7 @@ export default function Dashboard() {
               <option value="es">Español</option>
               <option value="en">English</option>
             </select>
+            */}
           </div>
 
           <textarea
@@ -320,6 +350,12 @@ export default function Dashboard() {
           </p>
 
           <div className="flex justify-center gap-2 mt-4">
+            <button
+              onClick={improveSentence}
+              className="w-1/3 px-4 py-2 bg-yellow-600 text-white rounded"
+            >
+              🌟 Mejorar oración
+            </button>
             <button
               onClick={speak}
               className="w-1/3 px-4 py-2 bg-green-600 text-white rounded"
