@@ -51,26 +51,26 @@ export default function Register() {
   };
 
   return (
-    <main className="min-h-screen flex">
+    <main className="min-h-screen flex flex-col md:flex-row">
       {/* Sección izquierda con imagen */}
       <section
-        className="w-1/2 bg-cover bg-center"
+        className="w-full md:w-1/2 bg-cover bg-center order-1 md:order-none"
         style={{
           backgroundImage: 'url("/banner.jpg")',
           backgroundPosition: "left center",
         }}
       >
-        <div className="h-full flex items-center justify-center bg-black/50">
-          <div className="relative z-10 text-center text-white px-6 h-full flex flex-col justify-center">
-            <div className="w-24 h-24 mx-auto mb-6">
+        <div className="h-full flex items-center justify-center bg-black/50 p-4 md:p-0">
+          <div className="relative z-10 text-center text-white px-4 md:px-6 h-full flex flex-col justify-center">
+            <div className="w-16 h-16 md:w-24 md:h-24 mx-auto mb-4 md:mb-6">
               <img
                 src="/logo.png"
                 alt="Logo SeñaTalk"
                 className="object-contain"
               />
             </div>
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">SeñaTalk</h1>
-            <p className="text-lg mb-4">
+            <h1 className="text-3xl md:text-5xl font-bold mb-2 md:mb-4">SeñaTalk</h1>
+            <p className="text-base md:text-lg mb-4">
               Plataforma inclusiva que traduce el lenguaje de señas peruano a
               texto y voz en tiempo real.
             </p>
@@ -79,9 +79,9 @@ export default function Register() {
       </section>
 
       {/* Sección derecha con formulario */}
-      <section className="w-1/2 bg-white flex items-center justify-center p-8">
+      <section className="w-full md:w-1/2 bg-white flex items-center justify-center p-6 md:p-8 order-2 md:order-none">
         <div className="w-full max-w-md">
-          <h2 className="text-2xl font-bold text-gray-900 text-center mb-6">
+          <h2 className="text-xl md:text-2xl font-bold text-gray-900 text-center mb-4 md:mb-6">
             Crear cuenta
           </h2>
 
@@ -92,7 +92,7 @@ export default function Register() {
               </label>
               <input
                 type="text"
-                className="w-full border p-3 rounded text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border p-2 md:p-3 rounded text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={username}
                 onChange={(e) => setName(e.target.value)}
                 required
@@ -105,7 +105,7 @@ export default function Register() {
               </label>
               <input
                 type="email"
-                className="w-full border p-3 rounded text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border p-2 md:p-3 rounded text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -118,7 +118,7 @@ export default function Register() {
               </label>
               <input
                 type="password"
-                className="w-full border p-3 rounded text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border p-2 md:p-3 rounded text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -131,7 +131,7 @@ export default function Register() {
               </label>
               <input
                 type="password"
-                className="w-full border p-3 rounded text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border p-2 md:p-3 rounded text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required
@@ -142,13 +142,13 @@ export default function Register() {
 
             <button
               type="submit"
-              className="w-full bg-blue-600 text-white py-3 rounded hover:bg-blue-700 transition"
+              className="w-full bg-blue-600 text-white py-2 md:py-3 rounded hover:bg-blue-700 transition"
             >
               Registrarme
             </button>
           </form>
 
-          <p className="mt-6 text-center text-sm text-gray-900">
+          <p className="mt-4 md:mt-6 text-center text-sm text-gray-900">
             ¿Ya tienes una cuenta?{" "}
             <a href="/" className="font-semibold text-blue-600 hover:underline">
               Inicia sesión
@@ -160,16 +160,16 @@ export default function Register() {
       {/* Modal para mensaje de éxito */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-sm w-full">
-            <h3 className="text-lg font-bold text-gray-900 mb-4">
+          <div className="bg-white rounded-lg p-4 md:p-6 max-w-xs w-full md:max-w-sm">
+            <h3 className="text-base md:text-lg font-bold text-gray-900 mb-2 md:mb-4">
               ¡Registro exitoso!
             </h3>
-            <p className="text-gray-700 mb-6">
+            <p className="text-gray-700 mb-4 md:mb-6">
               Bienvenido(a), {username}. Tu cuenta ha sido creada.
             </p>
             <button
               onClick={handleModalClose}
-              className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
+              className="w-full bg-blue-600 text-white py-1 md:py-2 rounded hover:bg-blue-700 transition"
             >
               Continuar al Dashboard
             </button>

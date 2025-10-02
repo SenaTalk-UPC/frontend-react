@@ -131,9 +131,9 @@ export default function FolderPage() {
   const currentFolderName = folders.find((f) => String(f.id) === folderId)?.name ?? folderId;
 
   return (
-    <main className="min-h-screen bg-white p-6 text-gray-800">
+    <main className="min-h-screen bg-white p-6 pt-20 text-gray-800">
       <Navbar current="Grabaciones" />
-
+      {/*}
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-xl font-semibold">
           📁 Grabaciones en <span className="text-blue-600">{currentFolderName}</span>
@@ -145,6 +145,7 @@ export default function FolderPage() {
           ← Volver a carpetas
         </button>
       </div>
+      
 
       <div className="mb-6 flex items-center gap-3">
         <label className="text-sm font-medium">Ordenar por fecha:</label>
@@ -157,6 +158,7 @@ export default function FolderPage() {
           <option value="asc">Más antiguas primero</option>
         </select>
       </div>
+      */}
 
       <div className="max-h-[70vh] overflow-y-auto pr-1">
         {orderedRecs.length === 0 ? (

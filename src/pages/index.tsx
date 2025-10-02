@@ -27,26 +27,26 @@ export default function Login() {
   };
 
   return (
-    <main className="min-h-screen flex">
+    <main className="min-h-screen flex flex-col md:flex-row">
       {/* Sección izquierda con imagen */}
       <section
-        className="w-1/2 bg-cover bg-center"
+        className="w-full md:w-1/2 bg-cover bg-center order-1 md:order-none"
         style={{
           backgroundImage: 'url("/banner.jpg")',
           backgroundPosition: "left center",
         }}
       >
-        <div className="h-full flex items-center justify-center bg-black/50">
-          <div className="relative z-10 text-center text-white px-6 h-full flex flex-col justify-center">
-            <div className="w-24 h-24 mx-auto mb-6">
+        <div className="h-full flex items-center justify-center bg-black/50 p-4 md:p-0">
+          <div className="relative z-10 text-center text-white px-4 md:px-6 h-full flex flex-col justify-center">
+            <div className="w-16 h-16 md:w-24 md:h-24 mx-auto mb-4 md:mb-6">
               <img
                 src="/logo.png"
                 alt="Logo SeñaTalk"
                 className="object-contain"
               />
             </div>
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">SeñaTalk</h1>
-            <p className="text-lg mb-4">
+            <h1 className="text-3xl md:text-5xl font-bold mb-2 md:mb-4">SeñaTalk</h1>
+            <p className="text-base md:text-lg mb-4">
               Plataforma inclusiva que traduce el lenguaje de señas peruano a texto y voz en tiempo real.
             </p>
           </div>
@@ -54,9 +54,9 @@ export default function Login() {
       </section>
 
       {/* Sección derecha con formulario */}
-      <section className="w-1/2 bg-white flex items-center justify-center p-8">
+      <section className="w-full md:w-1/2 bg-white flex items-center justify-center p-6 md:p-8 order-2 md:order-none">
         <div className="w-full max-w-md">
-          <h2 className="text-2xl font-bold text-gray-900 text-center mb-6">
+          <h2 className="text-xl md:text-2xl font-bold text-gray-900 text-center mb-4 md:mb-6">
             Iniciar sesión
           </h2>
 
@@ -67,7 +67,7 @@ export default function Login() {
               </label>
               <input
                 type="email"
-                className="w-full border p-3 rounded text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border p-2 md:p-3 rounded text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -81,7 +81,7 @@ export default function Login() {
               <div className="relative">
                 <input
                   type={showPassword ? "text" : "password"}
-                  className="w-full border p-3 rounded text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 pr-12"
+                  className="w-full border p-2 md:p-3 rounded text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 pr-12"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
@@ -104,13 +104,13 @@ export default function Login() {
 
             <button
               type="submit"
-              className="w-full bg-blue-600 text-white py-3 rounded hover:bg-blue-700 transition"
+              className="w-full bg-blue-600 text-white py-2 md:py-3 rounded hover:bg-blue-700 transition"
             >
               Iniciar sesión
             </button>
           </form>
 
-          <p className="mt-6 text-center text-sm text-gray-900">
+          <p className="mt-4 md:mt-6 text-center text-sm text-gray-900">
             ¿No tienes una cuenta?{" "}
             <a href="/register" className="text-blue-600 hover:underline">
               Regístrate

@@ -280,10 +280,10 @@ export default function Dashboard() {
   };
 
   return (
-    <main className="min-h-screen bg-white text-gray-800 p-6">
+    <main className="min-h-screen bg-white text-gray-800 p-4 md:p-6">
       <Navbar current="Captura y traducción" />
-      <section className="flex gap-8 items-stretch mt-20">
-        <div className="flex-1 bg-blue-50 p-4 rounded-lg shadow flex flex-col">
+      <section className="flex flex-col md:flex-row gap-4 md:gap-8 items-stretch mt-10 md:mt-20">
+        <div className="w-full md:flex-1 bg-blue-50 p-4 rounded-lg shadow flex flex-col">
           <div className="relative flex-1 aspect-video border rounded overflow-hidden bg-black">
             <video
               ref={videoRef}
@@ -297,41 +297,41 @@ export default function Dashboard() {
               className="absolute inset-0 w-full h-full pointer-events-none"
             />
             {!cameraOn && (
-              <div className="absolute inset-0 flex items-center justify-center text-gray-500 text-xl bg-white/80">
+              <div className="absolute inset-0 flex items-center justify-center text-gray-500 text-base md:text-xl bg-white/80">
                 [ Cámara (MediaPipe Holistic) aquí ]
               </div>
             )}
           </div>
 
-          <div className="flex flex-wrap gap-4 mt-4">
+          <div className="flex flex-wrap gap-2 md:gap-4 mt-2 md:mt-4">
             <button
               onClick={startCamera}
-              className="flex-1 px-4 py-2 bg-purple-700 text-white rounded"
+              className="flex-1 px-2 md:px-4 py-1 md:py-2 bg-purple-700 text-white rounded text-sm md:text-base"
             >
               🧤 Capturar
             </button>
             <button
               onClick={stopCamera}
-              className="flex-1 px-4 py-2 bg-red-600 text-white rounded"
+              className="flex-1 px-2 md:px-4 py-1 md:py-2 bg-red-600 text-white rounded text-sm md:text-base"
             >
               ❌ Detener
             </button>
             <button
               onClick={toggleOverlay}
-              className="flex-1 px-4 py-2 bg-gray-700 text-white rounded"
+              className="flex-1 px-2 md:px-4 py-1 md:py-2 bg-gray-700 text-white rounded text-sm md:text-base"
             >
               {showOverlay ? "🙈 Ocultar líneas" : "👀 Mostrar líneas"}
             </button>
           </div>
         </div>
 
-        <div className="flex-1 bg-blue-50 p-4 rounded-lg shadow flex flex-col">
+        <div className="w-full md:flex-1 bg-blue-50 p-4 rounded-lg shadow flex flex-col">
           <div className="flex items-center justify-between mb-2">
-            <label className="font-medium">Texto traducido</label>
+            <label className="font-medium text-sm md:text-base">Texto traducido</label>
             {/*<select
               value={lang}
               onChange={(e) => setLang(e.target.value as "es" | "en")}
-              className="px-3 py-1 rounded border bg-white text-sm text-gray-900"
+              className="px-2 md:px-3 py-0.5 md:py-1 rounded border bg-white text-xs md:text-sm text-gray-900"
             >
               <option value="es">Español</option>
               <option value="en">English</option>
@@ -342,29 +342,29 @@ export default function Dashboard() {
           <textarea
             readOnly
             value={translation}
-            className="flex-1 min-h-[600px] p-4 border rounded resize-none bg-white text-gray-900"
+            className="flex-1 min-h-[200px] md:min-h-[600px] p-2 md:p-4 border rounded resize-none bg-white text-gray-900 text-sm md:text-base"
           />
 
-          <p className="mt-2 text-sm text-gray-700">
+          <p className="mt-1 md:mt-2 text-xs md:text-sm text-gray-700">
             Confianza: {(Number(confidence) * 100).toFixed(2)}%
           </p>
 
-          <div className="flex justify-center gap-2 mt-4">
+          <div className="flex justify-center gap-2 mt-2 md:mt-4">
             <button
               onClick={improveSentence}
-              className="w-1/3 px-4 py-2 bg-yellow-600 text-white rounded"
+              className="w-1/3 px-2 md:px-4 py-1 md:py-2 bg-yellow-600 text-white rounded text-sm md:text-base"
             >
               🌟 Mejorar oración
             </button>
             <button
               onClick={speak}
-              className="w-1/3 px-4 py-2 bg-green-600 text-white rounded"
+              className="w-1/3 px-2 md:px-4 py-1 md:py-2 bg-green-600 text-white rounded text-sm md:text-base"
             >
               🔊 Voz
             </button>
             <button
               onClick={saveToFavorites}
-              className="w-1/3 px-4 py-2 bg-blue-600 text-white rounded"
+              className="w-1/3 px-2 md:px-4 py-1 md:py-2 bg-blue-600 text-white rounded text-sm md:text-base"
             >
               💾 Guardar
             </button>
@@ -375,14 +375,14 @@ export default function Dashboard() {
       {/* Modal */}
       {modal.isOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-sm w-full">
-            <h3 className="text-lg font-bold text-gray-900 mb-4">
+          <div className="bg-white rounded-lg p-4 md:p-6 max-w-xs w-full md:max-w-sm">
+            <h3 className="text-base md:text-lg font-bold text-gray-900 mb-2 md:mb-4">
               {modal.title}
             </h3>
-            <p className="text-gray-700 mb-6">{modal.message}</p>
+            <p className="text-gray-700 mb-4 md:mb-6 text-sm md:text-base">{modal.message}</p>
             <button
               onClick={closeModal}
-              className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
+              className="w-full bg-blue-600 text-white py-1 md:py-2 rounded hover:bg-blue-700 transition text-sm md:text-base"
             >
               Aceptar
             </button>
