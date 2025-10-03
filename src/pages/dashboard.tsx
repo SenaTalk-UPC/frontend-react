@@ -21,7 +21,7 @@ export default function Dashboard() {
   const [confidence, setConfidence] = useState("");
   const [cameraOn, setCameraOn] = useState(false);
   const [showOverlay, setOverlay] = useState(true);
-  const [lang, setLang] = useState<"es" | "en">("es");
+  const [lang] = useState<"es" | "en">("es");
   const [modal, setModal] = useState<{
     isOpen: boolean;
     title: string;
