@@ -1,7 +1,7 @@
 import axios from "axios";
 
-const API_URL = "http://40.76.114.46:8000/users";
-//const API_URL = 'http://127.0.0.1:8000/users';
+//const API_URL = "http://40.76.114.46:8000/users";
+const API_URL = 'https://senatalk.eastus.cloudapp.azure.com/users';
 
 /** Obtiene un usuario por id (json-server) */
 export async function getUser(id: string) {

@@ -2,8 +2,8 @@
 import axios from 'axios';
 
 const instance = axios.create({
-  baseURL: 'http://40.76.114.46:8000', // asegúrate que es el correcto
-  //baseURL: 'http://127.0.0.1:8000'
+  //baseURL: 'http://40.76.114.46:8000', // asegúrate que es el correcto
+  baseURL: 'https://senatalk.eastus.cloudapp.azure.com'
 });
 
 instance.interceptors.request.use(config => {

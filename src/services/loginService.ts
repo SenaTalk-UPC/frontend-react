@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-const API_URL = 'http://40.76.114.46:8000/auth';
-//const API_URL = 'http://127.0.0.1:8000/auth';
+//const API_URL = 'http://40.76.114.46:8000/auth';
+const API_URL = 'https://senatalk.eastus.cloudapp.azure.com/auth';
 
 // Login: obtiene token desde FastAPI
 export const loginUser = async ({ email, password }: { email: string; password: string }) => {
