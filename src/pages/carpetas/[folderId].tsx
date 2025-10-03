@@ -1,5 +1,5 @@
-import { useEffect, useState, useMemo } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import Navbar from "../../components/ui/navbar";
 import { getFolders } from "../../services/folderService";
 import { getRecordings, deleteRecording, updateTranslation } from "../../services/recordingService";
@@ -11,12 +11,10 @@ type Recording = { id: number; text: string; folder_id: number; created_at: stri
 
 export default function FolderPage() {
   const { folderId } = useParams<{ folderId: string }>();
-  const navigate = useNavigate();
 
   const [folders, setFolders] = useState<Folder[]>([]);
   const [recordings, setRecordings] = useState<Recording[]>([]);
   const [loading, setLoading] = useState(true);
-  const [sortOrder, setSortOrder] = useState<"desc" | "asc">("desc");
   const [langMap, setLangMap] = useState<Record<number, "es" | "en">>({});
   const [moveModal, setMoveModal] = useState<{
     isOpen: boolean;
@@ -42,7 +40,7 @@ export default function FolderPage() {
         setRecordings(recs);
 
         const initLang: Record<number, "es" | "en"> = {};
-        recs.forEach((r: Recording) => initLang[r.id] = "es");
+        recs.forEach((r: Recording) => (initLang[r.id] = "es"));
         setLangMap(initLang);
       } catch (err) {
         console.error(err);
@@ -51,14 +49,6 @@ export default function FolderPage() {
       }
     })();
   }, [folderId]);
-
-  const orderedRecs = useMemo(() => {
-    return [...recordings].sort((a, b) =>
-      sortOrder === "asc"
-        ? new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
-        : new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-    );
-  }, [recordings, sortOrder]);
 
   const handlePlay = async (txt: string, lang: "es" | "en") => {
     try {
@@ -94,7 +84,6 @@ export default function FolderPage() {
       setSelectedFolderId(null);
     } catch (err) {
       console.error("Error moving translation:", err);
-      // Optionally show an error modal here
     }
   };
 
@@ -104,19 +93,17 @@ export default function FolderPage() {
 
     try {
       const translatedText = await translateText(rec.text, targetLang);
-      // Actualizar el texto en el backend
       await updateTranslation(id, { text: translatedText, folder_id: rec.folder_id });
-      // Actualizar el estado local
+
       setRecordings((prev) =>
         prev.map((r) => (r.id === id ? { ...r, text: translatedText } : r))
       );
-      // Actualizar el idioma en langMap
+
       setLangMap((prev) => ({ ...prev, [id]: targetLang }));
       setTranslateModal({ isOpen: false, recordingId: null, currentLang: "es" });
       setSelectedTargetLang("es");
     } catch (err) {
       console.error("Error translating text:", err);
-      // Optionally show an error modal
     }
   };
 
@@ -128,62 +115,41 @@ export default function FolderPage() {
     );
   }
 
-  const currentFolderName = folders.find((f) => String(f.id) === folderId)?.name ?? folderId;
-
   return (
     <main className="min-h-screen bg-white p-6 pt-20 text-gray-800">
       <Navbar current="Grabaciones" />
-      {/*}
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-semibold">
-          📁 Grabaciones en <span className="text-blue-600">{currentFolderName}</span>
-        </h2>
-        <button
-          onClick={() => navigate("/carpetas")}
-          className="text-sm text-blue-600 hover:underline"
-        >
-          ← Volver a carpetas
-        </button>
-      </div>
-      
-
-      <div className="mb-6 flex items-center gap-3">
-        <label className="text-sm font-medium">Ordenar por fecha:</label>
-        <select
-          value={sortOrder}
-          onChange={(e) => setSortOrder(e.target.value as "asc" | "desc")}
-          className="px-3 py-1 border rounded"
-        >
-          <option value="desc">Más recientes primero</option>
-          <option value="asc">Más antiguas primero</option>
-        </select>
-      </div>
-      */}
 
       <div className="max-h-[70vh] overflow-y-auto pr-1">
-        {orderedRecs.length === 0 ? (
+        {recordings.length === 0 ? (
           <p className="text-gray-500">No hay grabaciones en esta carpeta.</p>
         ) : (
-          orderedRecs.map((rec) => (
+          recordings.map((rec) => (
             <div
               key={rec.id}
               className="bg-blue-50 p-4 rounded-lg shadow mb-4 flex flex-col md:flex-row md:items-center justify-between gap-4"
             >
               <div className="flex-1">
                 <p className="mb-1">{rec.text}</p>
-                {/* <span className="text-xs text-gray-500">{fmt(rec.created_at)}</span> */}
               </div>
 
               <div className="flex flex-wrap gap-3">
                 <button
-                  onClick={() => setMoveModal({ isOpen: true, recordingId: rec.id, currentText: rec.text })}
+                  onClick={() =>
+                    setMoveModal({ isOpen: true, recordingId: rec.id, currentText: rec.text })
+                  }
                   className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
                 >
                   Mover
                 </button>
 
                 <button
-                  onClick={() => setTranslateModal({ isOpen: true, recordingId: rec.id, currentLang: langMap[rec.id] ?? "es" })}
+                  onClick={() =>
+                    setTranslateModal({
+                      isOpen: true,
+                      recordingId: rec.id,
+                      currentLang: langMap[rec.id] ?? "es"
+                    })
+                  }
                   className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700"
                 >
                   Traducir a idioma...
@@ -219,7 +185,9 @@ export default function FolderPage() {
               onChange={(e) => setSelectedFolderId(parseInt(e.target.value) || null)}
               className="w-full border rounded p-2 mb-4 text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              <option value="" disabled>Seleccione una carpeta</option>
+              <option value="" disabled>
+                Seleccione una carpeta
+              </option>
               {folders
                 .filter((f) => f.id !== Number(folderId))
                 .map((f) => (
@@ -248,7 +216,7 @@ export default function FolderPage() {
                 disabled={!selectedFolderId}
               >
                 Aceptar
-            </button>
+              </button>
             </div>
           </div>
         </div>
