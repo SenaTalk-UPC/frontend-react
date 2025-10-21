@@ -280,11 +280,13 @@ export default function Dashboard() {
   };
 
   return (
-    <main className="min-h-screen bg-white text-gray-800 p-4 md:p-6">
+    <main className="h-screen bg-white text-gray-800 flex flex-col">
       <Navbar current="Captura y traducción" />
-      <section className="flex flex-col md:flex-row gap-4 md:gap-8 items-stretch mt-10 md:mt-20">
+      
+      <section className="flex-1 flex flex-col md:flex-row gap-4 md:gap-8 items-stretch p-4 md:p-6 mt-4 overflow-y-auto min-h-0">
         <div className="w-full md:flex-1 bg-blue-50 p-4 rounded-lg shadow flex flex-col">
-          <div className="relative flex-1 aspect-video border rounded overflow-hidden bg-black">
+          
+          <div className="relative flex-1 border rounded overflow-hidden bg-black">
             <video
               ref={videoRef}
               className="absolute inset-0 w-full h-full object-contain"
@@ -342,7 +344,7 @@ export default function Dashboard() {
           <textarea
             readOnly
             value={translation}
-            className="flex-1 min-h-[200px] md:min-h-[600px] p-2 md:p-4 border rounded resize-none bg-white text-gray-900 text-sm md:text-base"
+            className="flex-1 min-h-[150px] md:min-h-0 p-2 md:p-4 border rounded resize-none bg-white text-gray-900 text-sm md:text-base"
           />
 
           <p className="mt-1 md:mt-2 text-xs md:text-sm text-gray-700">
