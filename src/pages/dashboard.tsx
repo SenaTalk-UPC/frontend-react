@@ -280,10 +280,10 @@ export default function Dashboard() {
   };
 
   return (
-    <main className="h-screen bg-white text-gray-800 flex flex-col">
+    <main className="h-screen bg-white text-gray-800 flex flex-col pt-16 sm:pt-20">
       <Navbar current="Captura y traducción" />
       
-      <section className="flex-1 flex flex-col md:flex-row gap-4 md:gap-8 items-stretch p-4 md:p-6 mt-4 overflow-y-auto min-h-0">
+      <section className="flex-1 flex flex-col md:flex-row gap-4 md:gap-8 items-stretch px-4 md:px-6 pb-4 md:pb-6 overflow-y-auto min-h-0">
         <div className="w-full md:flex-1 bg-blue-50 p-4 rounded-lg shadow flex flex-col">
           
           <div className="relative flex-1 border rounded overflow-hidden bg-black">
