@@ -30,6 +30,8 @@ export default function Dashboard() {
   const isPredictingRef = useRef(false);
   const canPredictRef = useRef(true);
 
+  const lastAddedWordRef = useRef<string | null>(null);
+
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const cameraRef = useRef<Camera | null>(null);
@@ -194,7 +196,15 @@ export default function Dashboard() {
 
         sendKeypoints(sequenceCopy)
           .then((response) => {
-            setTranslation((prev) => (prev ? prev + " " + response.result.text : response.result.text));
+            const newWord = response.result.text;
+            const lastWord = lastAddedWordRef.current;
+
+            if (newWord !== 'neutral' && newWord !== lastWord) {
+              setTranslation((prev) => (prev ? prev + " " + newWord : newWord));
+              lastAddedWordRef.current = newWord;
+            }
+
+            // setTranslation((prev) => (prev ? prev + " " + response.result.text : response.result.text));
             setConfidence(response.result.confidence);
           })
           .catch((error) => {
@@ -224,6 +234,7 @@ export default function Dashboard() {
     cameraRef.current?.stop();
     setCameraOn(false);
     sequenceRef.current = [];
+    lastAddedWordRef.current = null;
   };
 
   const toggleOverlay = () =>
